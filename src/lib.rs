@@ -11,8 +11,8 @@ use std::{
 
 pub mod erase;
 pub mod cursor;
-pub mod color;
-pub mod graphics;
+/// this module (style.rs) contains a non macro defined fn.
+pub mod style;
 pub mod screen;
 
 type DynErr<T> = Result<T, Box<dyn std::error::Error>>; 
