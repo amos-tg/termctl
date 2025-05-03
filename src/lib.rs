@@ -71,8 +71,8 @@ macro_rules! gen_all {
                 $($arg_name: $arg_type),*
             ) {
                 self.add(crate::MacroFmt::macro_fmt(
-                    $seq,
                     $args,
+                    $seq,
                 ))
             }
         }
@@ -85,8 +85,8 @@ macro_rules! gen_all {
             Ok(crate::template( 
                 &mut stdout,
                 crate::MacroFmt::macro_fmt(
-                    $seq,
                     $args,
+                    $seq,
                 ),
             )?) 
         }
@@ -110,19 +110,34 @@ macro_rules! gen_all {
     )*};  
 }
 
-pub trait MacroFmt<T, U = ()> {
+pub trait MacroFmt {
     const PAT: &str = "{}";
 
     fn macro_fmt(
+        &self,
         lit: &'static str,
-        fmtted: Self,
     ) -> String;
 }
 
-impl<T, U> MacroFmt<T, U> for T where T: AsRef<[U]>, U: ToString {
+pub struct StrArray<'a, const N: usize>([&'a str; N]);
+
+impl<'a, const N: usize> StrArray<'a, N> {
+    #[inline(always)]
+    pub fn new(str_array: [&'a str; N]) -> Self {
+        return StrArray(str_array);
+    }
+}
+
+impl<'a, const N: usize> AsRef<[&'a str]> for StrArray<'a, N> {
+    fn as_ref(&self) -> &[&'a str] {
+        return &self.0[0..];
+    } 
+}
+
+impl<const N: usize> MacroFmt for StrArray<'_, N> {
     fn macro_fmt(
+        &self,
         lit: &'static str,
-        fmtted: Self,
     ) -> String {
         let mut ret = lit.to_string(); 
 
@@ -130,26 +145,22 @@ impl<T, U> MacroFmt<T, U> for T where T: AsRef<[U]>, U: ToString {
             ret.matches(Self::PAT)
                 .collect::<Vec<&str>>()
                 .len(),
-            fmtted.as_ref().len(),
+            self.as_ref().len(),
             "Error: Unequal formatting args and format specifiers",
         );
 
-        for fmt in fmtted.as_ref() {
-            ret = ret.replacen(Self::PAT, fmt.to_string().as_str(), 1);
+        for fmt in self.as_ref() {
+            ret = ret.replacen(Self::PAT, fmt, 1);
         }
 
         return ret;
     }
 }
 
-impl<T> MacroFmt<T> for &T 
-where 
-    T: ToString, 
-{
-
+impl MacroFmt for &str {
     fn macro_fmt(
+        &self,
         lit: &'static str,
-        fmtted: Self,
     ) -> String {
         let ret = lit.to_string();
 
@@ -161,6 +172,6 @@ where
             "Error: Incorrect number of formatting args or specifiers",
         );
 
-        return ret.replacen(Self::PAT, fmtted.to_string().as_str(), 1);
+        return ret.replacen(Self::PAT, self, 1);
     }
 }

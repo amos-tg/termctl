@@ -1,4 +1,4 @@
-use crate::gen_all;
+use crate::{gen_all, StrArray};
 
 gen_all!(
     (
@@ -45,48 +45,48 @@ gen_all!(
 );
 
 gen_all!(
-    "\x1B\x5B\x7B{}\x7D\x3B\x7B{}\x7DH", &[line, column],
-    [(line, u16), (column, u16)];
+    "\x1B\x5B\x7B{}\x7D\x3B\x7B{}\x7DH", &StrArray::new([line, column]),
+    [(line, &str), (column, &str)];
     to_line_n_column_n_h,
     "ESC\x5B\x7Bline\x7D\x3B\x7Bcolumn\x7DH: moves cursor to line n, and column; if this doesn't work try the f version.";
 
-    "\x1B\x5B\x7B{}\x7D\x3B\x7B{}\x7Df", &[line, column],
-    [(line, u16), (column, u16)];
+    "\x1B\x5B\x7B{}\x7D\x3B\x7B{}\x7Df", &StrArray::new([line, column]),
+    [(line, &str), (column, &str)];
     to_line_n_column_n_f,
     "ESC\x5B\x7Bline\x7D\x3B\x7Bcolumn\x7Df: moves cursor to line n, and column; if this doesn't work try the h version.";
 
     "\x1B\x5B{}A", &lines,
-    [(lines, u16)];
+    [(lines, &str)];
     up_n_lines,
     "ESC[#linesA: moves cursor up n #lines";
 
     "\x1B\x5B{}B", &lines,
-    [(lines, u16)];
+    [(lines, &str)];
     down_n_lines,
     "ESC[#linesB: moves cursor down n #lines";
 
     "\x1B\x5B{}C", &columns,
-    [(columns, u16)];
+    [(columns, &str)];
     right_n_columns,
     "ESC[#columnsC: moves cursor right n #columns";
 
     "\x1B\x5B{}D", &columns,
-    [(columns, u16)];
+    [(columns, &str)];
     left_n_columns,
     "ESC[#columnsD: moves cursor left n #columns";
 
     "\x1B\x5B{}E", &lines,
-    [(lines, u16)];
+    [(lines, &str)];
     beg_of_next_n_down,
     "ESC[#linesE: moves cursor to the beginning of next line, n #lines down";
 
     "\x1B\x5B{}F", &lines,
-    [(lines, u16)];
+    [(lines, &str)];
     beg_of_prev_n_up,
     "ESC[#linesF: moves cursor to the beginning of previous line n #lines up";
 
     "\x1B\x5B{}G", &column,
-    [(column, u16)];
+    [(column, &str)];
     column_n,
     "ESC[#columnG: moves cursor to #column n";
 

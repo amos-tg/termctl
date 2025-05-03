@@ -2,12 +2,12 @@ use crate::gen_all;
 
 gen_all!(
     "\x1B\x5B={}h", &mode,
-    [(mode, u8)]; 
+    [(mode, &str)]; 
     set_mode_val, 
     "Sets the mode for the given value.";
 
     "\x1B\x5B={}l", &mode,
-    [(mode, u8)];
+    [(mode, &str)];
     reset_mode_val,
     "Resets the mode for the given value.";
 );
