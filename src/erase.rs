@@ -1,8 +1,5 @@
 use crate::gen_all;
 
-#[cfg(test)]
-mod test;
-
 gen_all!(
     (
         "\x1B\x5B\x4A",

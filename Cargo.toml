@@ -6,6 +6,3 @@ readme = "README.md"
 description = "small crate for controlling terminal output"
 repository = "https://github.com/amos-tg/termctl"
 license = "MIT OR Apache-2.0"
-
-[dependencies]
-anyhow = "1.0.98"

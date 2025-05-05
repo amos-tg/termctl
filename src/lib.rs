@@ -11,18 +11,9 @@ use std::{
 
 pub mod erase;
 pub mod cursor;
-/// this module (style.rs) contains a non macro defined fn.
+// this module (style.rs) contains a non macro defined fn.
 pub mod style;
 pub mod screen;
-
-type DynErr<T> = Result<T, Box<dyn std::error::Error>>; 
-
-#[macro_export]
-macro_rules! err {
-    ($msg:expr) => {
-        return(anyhow::anyhow!(expr).into());
-    };
-}
 
 /// Object used for printing multiple escape sequences
 pub struct MultiSeq(String);
@@ -56,6 +47,7 @@ fn template(
     return Ok(()); 
 }
 
+/// generates almost all of the functions in the library.
 #[macro_export]
 macro_rules! gen_all {
     ($(
@@ -110,15 +102,6 @@ macro_rules! gen_all {
     )*};  
 }
 
-pub trait MacroFmt {
-    const PAT: &str = "{}";
-
-    fn macro_fmt(
-        &self,
-        lit: &'static str,
-    ) -> String;
-}
-
 pub struct StrArray<'a, const N: usize>([&'a str; N]);
 
 impl<'a, const N: usize> StrArray<'a, N> {
@@ -134,6 +117,17 @@ impl<'a, const N: usize> AsRef<[&'a str]> for StrArray<'a, N> {
     } 
 }
 
+pub trait MacroFmt {
+    const PAT: &'static str = "{}";
+    const ERR: &'static str = "Error: Differing number of formatting arguments and brace patterns";
+
+    fn macro_fmt(
+        &self,
+        lit: &'static str,
+    ) -> String;
+}
+
+
 impl<const N: usize> MacroFmt for StrArray<'_, N> {
     fn macro_fmt(
         &self,
@@ -146,7 +140,7 @@ impl<const N: usize> MacroFmt for StrArray<'_, N> {
                 .collect::<Vec<&str>>()
                 .len(),
             self.as_ref().len(),
-            "Error: Unequal formatting args and format specifiers",
+            "{}", Self::ERR,
         );
 
         for fmt in self.as_ref() {
@@ -169,7 +163,7 @@ impl MacroFmt for &str {
                 .collect::<Vec<&str>>()
                 .len(),
             1, 
-            "Error: Incorrect number of formatting args or specifiers",
+            "{}", Self::ERR,
         );
 
         return ret.replacen(Self::PAT, self, 1);
